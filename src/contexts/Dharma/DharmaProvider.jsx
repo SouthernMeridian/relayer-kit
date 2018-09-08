@@ -5,7 +5,8 @@ import DharmaContext from "./DharmaContext";
 
 // Get the host from the current environment. If it is not specified, we will assume we
 // are running a testnet or production build and use Metamask.
-const blockchainHost = process.env.REACT_APP_BLOCKCHAIN_HOST;
+let blockchainHost = process.env.REACT_APP_BLOCKCHAIN_HOST;
+blockchainHost = null;
 
 let dharma;
 if (blockchainHost) {

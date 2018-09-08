@@ -12,7 +12,7 @@ const db = `db-${network}.json`;
 const router = jsonServer.router(`data/${db}`);
 
 const middlewares = jsonServer.defaults({
-    static: path.join(__dirname, "build"),
+    static: path.join(__dirname, "build")
 });
 
 /**
@@ -34,15 +34,15 @@ server.use(middlewares);
  *
  * @param loanData
  */
-const getFee = (loanData) => {
-   const principalAmount = parseFloat(loanData.principalAmount);
+const getFee = loanData => {
+    const principalAmount = parseFloat(loanData.principalAmount);
 
-   if (!principalAmount) {
-       return 0;
-   }
+    if (!principalAmount) {
+        return 0;
+    }
 
     // In this example we return a fee of 5% of the principal amount, rounded down to 2 decimals.
-    const totalFee = (principalAmount / 100) * FEE_PERCENT;
+    const totalFee = principalAmount / 100 * FEE_PERCENT;
     return totalFee.toFixed(2);
 };
 
@@ -51,6 +51,12 @@ server.use(jsonServer.bodyParser);
 // The client can request a relayer fee for some given loan data.
 server.get("/relayerFee", (req, res) => res.json({ fee: getFee(req.query) }));
 server.get("/relayerAddress", (req, res) => res.json({ address: RELAYER_ADDRESS }));
+
+server.use(
+    jsonServer.rewriter({
+        "/v0/debt_orders": "/loanRequests"
+    })
+);
 
 // Add a "createdAt" field for each new LoanRequest.
 server.use((req, res, next) => {
